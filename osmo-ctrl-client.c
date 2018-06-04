@@ -27,6 +27,7 @@
 
 #include "simple_ctrl.h"
 
+#include <osmocom/core/msgb.h>
 #include <osmocom/core/logging.h>
 #include <osmocom/core/application.h>
 
@@ -71,7 +72,17 @@ int main(int argc, char **argv)
 		rc = simple_ctrl_set(sch, argv[4], argv[5]);
 		if (rc < 0)
 			exit(1);
-	}
+	} else if (!strcmp(argv[3], "monitor")) {
+		simple_ctrl_set_timeout(sch, 0);
+		while (true) {
+			struct msgb *msg = simple_ctrl_receive(sch);
+			if (!msg)
+				exit(1);
+			printf("%s", (char *) msgb_l2(msg));
+			msgb_free(msg);
+		}
+	} else
+		exit_help();
 
 	exit(0);
 }
