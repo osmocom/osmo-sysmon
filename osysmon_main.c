@@ -121,6 +121,7 @@ int main(int argc, char **argv)
 	INIT_LLIST_HEAD(&g_oss->ctrl_clients);
 
 	vty_init(&vty_info);
+	osysmon_sysinfo_init();
 	osysmon_ctrl_init();
 
 	rc = vty_read_config_file(config_file, NULL);
@@ -135,7 +136,9 @@ int main(int argc, char **argv)
 
 	while (1) {
 		struct value_node *root = value_node_add(g_oss, NULL, "root", NULL);
+		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
+
 		display_update(root);
 		value_node_del(root);
 		sleep(1);

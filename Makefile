@@ -10,7 +10,7 @@ osmo-ctrl-client: osmo-ctrl-client.o simple_ctrl.o
 rtnl: rtnl.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
-osysmon: value_node.o simple_ctrl.o osysmon_ctrl.o osysmon_main.o
+osysmon: value_node.o simple_ctrl.o osysmon_ctrl.o osysmon_sysinfo.o osysmon_main.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
 

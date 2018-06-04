@@ -72,3 +72,6 @@ enum osysmon_vty_node {
 int osysmon_ctrl_go_parent(struct vty *vty);
 int osysmon_ctrl_init();
 int osysmon_ctrl_poll(struct value_node *parent);
+
+int osysmon_sysinfo_init();
+int osysmon_sysinfo_poll(struct value_node *parent);
