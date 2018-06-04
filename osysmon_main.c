@@ -27,6 +27,7 @@
 #include <string.h>
 #include <signal.h>
 
+#include "config.h"
 #include "osysmon.h"
 #include "value_node.h"
 
@@ -63,7 +64,7 @@ static struct vty_app_info vty_info = {
 	"License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl-2.0.html>\r\n"
 	"This is free software: you are free to change and redistribute it.\r\n"
 	"There is NO WARRANTY, to the extent permitted by law.\r\n",
-	.version = "0.0", //PACKAGE_VERSION
+	.version = PACKAGE_VERSION,
 	.go_parent_cb = osysmon_go_parent,
 	.is_config_node = osysmon_is_config_node,
 };
