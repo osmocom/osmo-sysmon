@@ -40,20 +40,27 @@
  * blocking I/O with timeout helpers
  ***********************************************************************/
 
+static struct timeval *timeval_from_msec(uint32_t tout_msec)
+{
+	static struct timeval tout;
+
+	if (tout_msec == 0)
+		return NULL;
+	tout.tv_sec = tout_msec/1000;
+	tout.tv_usec = (tout_msec%1000)*1000;
+
+	return &tout;
+}
+
 static ssize_t read_timeout(int fd, void *buf, size_t count, uint32_t tout_msec)
 {
-	struct timeval tout;
 	fd_set readset;
 	int rc;
 
 	FD_ZERO(&readset);
 	FD_SET(fd, &readset);
-	if (tout_msec) {
-		tout.tv_sec = tout_msec/1000;
-		tout.tv_usec = (tout_msec%1000)*1000;
-	}
 
-	rc = select(fd+1, &readset, NULL, NULL, tout_msec ? &tout : NULL);
+	rc = select(fd+1, &readset, NULL, NULL, timeval_from_msec(tout_msec));
 	if (rc < 0)
 		return rc;
 
@@ -65,18 +72,13 @@ static ssize_t read_timeout(int fd, void *buf, size_t count, uint32_t tout_msec)
 
 static ssize_t write_timeout(int fd, const void *buf, size_t count, uint32_t tout_msec)
 {
-	struct timeval tout;
 	fd_set writeset;
 	int rc;
 
 	FD_ZERO(&writeset);
 	FD_SET(fd, &writeset);
-	if (tout_msec) {
-		tout.tv_sec = tout_msec/1000;
-		tout.tv_usec = (tout_msec%1000)*1000;
-	}
 
-	rc = select(fd+1, NULL, &writeset, NULL, tout_msec ? &tout : NULL);
+	rc = select(fd+1, NULL, &writeset, NULL, timeval_from_msec(tout_msec));
 	if (rc < 0)
 		return rc;
 
