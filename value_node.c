@@ -22,6 +22,7 @@
  */
 
 #include <talloc.h>
+#include <string.h>
 #include <osmocom/core/utils.h>
 
 #include "value_node.h"
@@ -30,7 +31,15 @@ struct value_node *value_node_add(void *ctx, struct value_node *parent,
 				  const char *name, const char *value)
 {
 	struct value_node *vn = talloc_zero(parent, struct value_node);
+
+	if (parent && value_node_find(parent, name)) {
+		/* duplicate name not permitted! */
+		return NULL;
+	}
+
+	vn = talloc_zero(parent, struct value_node);
 	OSMO_ASSERT(vn);
+
 	/* we assume the name is static/const and owned by caller */
 	vn->name = name;
 	if (value)
@@ -40,6 +49,25 @@ struct value_node *value_node_add(void *ctx, struct value_node *parent,
 		llist_add_tail(&vn->list, &parent->children);
 	else
 		INIT_LLIST_HEAD(&vn->list);
+	return vn;
+}
+
+struct value_node *value_node_find(struct value_node *parent, const char *name)
+{
+	struct value_node *vn;
+	llist_for_each_entry(vn, &parent->children, list) {
+		if (!strcmp(name, vn->name))
+			return vn;
+	}
+	return NULL;
+}
+
+struct value_node *value_node_find_or_add(struct value_node *parent, const char *name)
+{
+	struct value_node *vn;
+	vn = value_node_find(parent, name);
+	if (!vn)
+		vn = value_node_add(parent, parent, name, NULL);
 	return vn;
 }
 
