@@ -8,6 +8,9 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 					    uint32_t tout_msec);
 void simple_ctrl_close(struct simple_ctrl_handle *sch);
 
+void simple_ctrl_set_timeout(struct simple_ctrl_handle *sch, uint32_t tout_msec);
+struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch);
+
 char *simple_ctrl_get(struct simple_ctrl_handle *sch, const char *var);
 int simple_ctrl_set(struct simple_ctrl_handle *sch, const char *var, const char *val);
 

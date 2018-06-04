@@ -119,6 +119,11 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 	return sch;
 }
 
+void simple_ctrl_set_timeout(struct simple_ctrl_handle *sch, uint32_t tout_msec)
+{
+	sch->tout_msec = tout_msec;
+}
+
 void simple_ctrl_close(struct simple_ctrl_handle *sch)
 {
 	close(sch->fd);
@@ -159,7 +164,7 @@ static struct msgb *simple_ipa_receive(struct simple_ctrl_handle *sch)
 	return resp;
 }
 
-static struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch)
+struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch)
 {
 	struct msgb *resp;
 	struct ipaccess_head *ih;
