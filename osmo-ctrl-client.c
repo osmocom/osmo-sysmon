@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
 	osmo_init_logging2(NULL, &log_info);
 
-	sch = simple_ctrl_open(NULL, host, port);
+	sch = simple_ctrl_open(NULL, host, port, 1000);
 	if (!sch)
 		exit(1);
 

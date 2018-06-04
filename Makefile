@@ -1,5 +1,5 @@
 LDFLAGS:=-losmocore -losmogsm -ltalloc
-CFLAGS:=-Wall
+CFLAGS:=-Wall -g
 
 osmo-ctrl-client: osmo-ctrl-client.o simple_ctrl.o
 	$(CC) $(LDFLAGS) -o $@ $^

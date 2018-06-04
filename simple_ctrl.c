@@ -36,12 +36,65 @@
 
 #include "simple_ctrl.h"
 
+/***********************************************************************
+ * blocking I/O with timeout helpers
+ ***********************************************************************/
+
+static ssize_t read_timeout(int fd, void *buf, size_t count, uint32_t tout_msec)
+{
+	struct timeval tout;
+	fd_set readset;
+	int rc;
+
+	FD_ZERO(&readset);
+	FD_SET(fd, &readset);
+	tout.tv_sec = tout_msec/1000;
+	tout.tv_usec = (tout_msec%1000)*1000;
+
+	rc = select(fd+1, &readset, NULL, NULL, &tout);
+	if (rc < 0)
+		return rc;
+
+	if (FD_ISSET(fd, &readset))
+		return read(fd, buf, count);
+
+	return -ETIMEDOUT;
+}
+
+static ssize_t write_timeout(int fd, const void *buf, size_t count, uint32_t tout_msec)
+{
+	struct timeval tout;
+	fd_set writeset;
+	int rc;
+
+	FD_ZERO(&writeset);
+	FD_SET(fd, &writeset);
+	tout.tv_sec = tout_msec/1000;
+	tout.tv_usec = (tout_msec%1000)*1000;
+
+	rc = select(fd+1, NULL, &writeset, NULL, &tout);
+	if (rc < 0)
+		return rc;
+
+	if (FD_ISSET(fd, &writeset))
+		return write(fd, buf, count);
+
+	return -ETIMEDOUT;
+}
+
+
+/***********************************************************************
+ * actual CTRL client API
+ ***********************************************************************/
+
 struct simple_ctrl_handle {
 	int fd;
 	uint32_t next_id;
+	uint32_t tout_msec;
 };
 
-struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_t dport)
+struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_t dport,
+					    uint32_t tout_msec)
 {
 	struct simple_ctrl_handle *sch;
 	int rc;
@@ -58,6 +111,7 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 		return NULL;
 	}
 	sch->fd = rc;
+	sch->tout_msec = tout_msec;
 	return sch;
 }
 
@@ -73,8 +127,11 @@ static struct msgb *simple_ipa_receive(struct simple_ctrl_handle *sch)
 	struct msgb *resp;
 	int rc, len;
 
-	rc = read(sch->fd, (uint8_t *) &hh, sizeof(hh));
-	if (rc != sizeof(hh)) {
+	rc = read_timeout(sch->fd, (uint8_t *) &hh, sizeof(hh), sch->tout_msec);
+	if (rc < 0) {
+		fprintf(stderr, "CTRL: Error during read: %d\n", rc);
+		return NULL;
+	} else if (rc < sizeof(hh)) {
 		fprintf(stderr, "CTRL: ERROR: short read (header)\n");
 		return NULL;
 	}
@@ -130,12 +187,14 @@ static int simple_ctrl_send(struct simple_ctrl_handle *sch, struct msgb *msg)
 	ipa_prepend_header_ext(msg, IPAC_PROTO_EXT_CTRL);
 	ipa_prepend_header(msg, IPAC_PROTO_OSMO);
 
-	rc = write(sch->fd, msg->data, msg->len);
-
-	if (rc < msg->len) {
+	rc = write_timeout(sch->fd, msg->data, msg->len, sch->tout_msec);
+	if (rc < 0) {
+		fprintf(stderr, "CTRL: Error during write: %d\n", rc);
+		return rc;
+	} else if (rc < msg->len) {
 		fprintf(stderr, "CTRL: ERROR: short write\n");
 		msgb_free(msg);
-		return rc;
+		return -1;
 	} else {
 		msgb_free(msg);
 		return 0;
@@ -172,6 +231,8 @@ char *simple_ctrl_get(struct simple_ctrl_handle *sch, const char *var)
 		return NULL;
 	}
 	resp = simple_ctrl_xceive(sch, msg);
+	if (!resp)
+		return NULL;
 
 	rc = sscanf(msgb_l2(resp), "GET_REPLY %u %ms %ms", &rx_id, &rx_var, &rx_val);
 	if (rc == 3) {
