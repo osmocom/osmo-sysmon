@@ -73,20 +73,27 @@ static const char *config_file = "osysmon.cfg";
 struct osysmon_state *g_oss;
 
 
-static void print_node(struct value_node *node)
+static void print_node(struct value_node *node, unsigned int indent)
 {
+	unsigned int i;
+
 	if (node->value) {
+		for (i = 0; i < indent; i++)
+			fputc(' ', stdout);
 		printf("%s: %s\n", node->name, node->value);
 	} else {
 		struct value_node *vn;
+		for (i = 0; i < indent; i++)
+			fputc(' ', stdout);
+		printf("%s\n", node->name);
 		llist_for_each_entry(vn, &node->children, list)
-			print_node(vn);
+			print_node(vn, indent+2);
 	}
 }
 
 static void display_update(struct value_node *root)
 {
-	print_node(root);
+	print_node(root, 0);
 }
 
 static void signal_handler(int signal)
