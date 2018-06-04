@@ -16,18 +16,18 @@ AM_LDFLAGS = \
 	$(NUKK)
 
 bin_PROGRAMS = \
-	osysmon \
+	osmo-sysmon \
 	osmo-ctrl-client \
 	$(NULL)
 
-osysmon_LDADD = \
+osmo_sysmon_LDADD = \
 	$(LIBOSMOCORE_LIBS) \
 	$(LIBOSMOGSM_LIBS) \
 	$(LIBOSMOVTY_LIBS) \
 	$(LIBMNL_LIBS) \
 	$(NULL)
 
-osysmon_SOURCES = \
+osmo_sysmon_SOURCES = \
 	value_node.c \
 	simple_ctrl.c \
 	osysmon_ctrl.c \
