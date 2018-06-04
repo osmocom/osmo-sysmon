@@ -35,7 +35,10 @@ static struct log_info log_info = {};
 
 static void exit_help(void)
 {
-	printf("help!\n");
+	printf("Usage:\n");
+	printf("\tosmo-ctrl-client HOST PORT get VARIABLE\n");
+	printf("\tosmo-ctrl-client HOST PORT set VARIABLE VALUE\n");
+	printf("\tosmo-ctrl-client HOST PORT monitor\n");
 	exit(2);
 }
 
