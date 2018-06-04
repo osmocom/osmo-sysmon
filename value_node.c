@@ -71,6 +71,17 @@ struct value_node *value_node_find_or_add(struct value_node *parent, const char 
 	return vn;
 }
 
+struct value_node *value_node_find_by_idx(struct value_node *parent, int idx)
+{
+	struct value_node *vn;
+	llist_for_each_entry(vn, &parent->children, list) {
+		if (idx == vn->idx)
+			return vn;
+	}
+	return NULL;
+}
+
+
 void value_node_del(struct value_node *node)
 {
 	/* remove ourselves from the parent */

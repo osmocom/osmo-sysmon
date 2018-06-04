@@ -8,6 +8,8 @@ struct value_node {
 	struct llist_head list;
 	/* the display name */
 	const char *name;
+	/* additional numeric index (for ifindex matching) */
+	int idx;
 	/* the value (if any) */
 	const char *value;
 	/* the children (if value == NULL) */
@@ -17,5 +19,6 @@ struct value_node {
 struct value_node *value_node_add(void *ctx, struct value_node *parent,
 				  const char *name, const char *value);
 struct value_node *value_node_find(struct value_node *parent, const char *name);
+struct value_node *value_node_find_by_idx(struct value_node *parent, int idx);
 struct value_node *value_node_find_or_add(struct value_node *parent, const char *name);
 void value_node_del(struct value_node *node);
