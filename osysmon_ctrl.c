@@ -293,7 +293,7 @@ static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 		}
 		ccgv->last_value = value;
 #else
-		value_node_add(vn_clnt, vn_clnt, cc->cfg.name, value);
+		value_node_add(vn_clnt, vn_clnt, ccgv->cfg.name, value);
 		free(value); /* no talloc, this is from sscanf() */
 #endif
 	}
