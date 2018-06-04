@@ -26,6 +26,7 @@
 #include <talloc.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/ioctl.h>
 
 #include <netinet/in.h>
 
@@ -103,22 +104,47 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 					    uint32_t tout_msec)
 {
 	struct simple_ctrl_handle *sch;
-	int rc;
+	fd_set writeset;
+	int off = 0;
+	int rc, fd;
 
-	rc = osmo_sock_init(AF_INET, SOCK_STREAM, IPPROTO_TCP, host, dport, OSMO_SOCK_F_CONNECT);
-	if (rc < 0) {
+	fd = osmo_sock_init(AF_INET, SOCK_STREAM, IPPROTO_TCP, host, dport,
+			    OSMO_SOCK_F_CONNECT | OSMO_SOCK_F_NONBLOCK);
+	if (fd < 0) {
 		fprintf(stderr, "CTRL: error connecting socket: %s\n", strerror(errno));
 		return NULL;
 	}
 
-	sch = talloc_zero(ctx, struct simple_ctrl_handle);
-	if (!sch) {
-		close(rc);
-		return NULL;
+	/* wait until connect (or timeout) happens */
+	FD_ZERO(&writeset);
+	FD_SET(fd, &writeset);
+	printf("inprogress");
+	rc = select(fd+1, NULL, &writeset, NULL, timeval_from_msec(tout_msec));
+	if (rc == 0) {
+		fprintf(stderr, "CTRL: timeout during connect\n");
+		goto out_close;
 	}
-	sch->fd = rc;
+	if (rc < 0) {
+		fprintf(stderr, "CTRL: error connecting socket: %s\n", strerror(errno));
+		goto out_close;
+	}
+
+	/* set FD blocking again */
+	if (ioctl(fd, FIONBIO, (unsigned char *)&off) < 0) {
+		fprintf(stderr, "CTRL: cannot set socket blocking: %s\n", strerror(errno));
+		goto out_close;
+	}
+
+	sch = talloc_zero(ctx, struct simple_ctrl_handle);
+	if (!sch)
+		goto out_close;
+	sch->fd = fd;
 	sch->tout_msec = tout_msec;
 	return sch;
+
+out_close:
+	close(fd);
+	return NULL;
 }
 
 void simple_ctrl_set_timeout(struct simple_ctrl_handle *sch, uint32_t tout_msec)
