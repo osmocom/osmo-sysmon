@@ -126,10 +126,12 @@ int main(int argc, char **argv)
 
 	g_oss = talloc_zero(NULL, struct osysmon_state);
 	INIT_LLIST_HEAD(&g_oss->ctrl_clients);
+	INIT_LLIST_HEAD(&g_oss->netdevs);
 
 	vty_init(&vty_info);
 	osysmon_sysinfo_init();
 	osysmon_ctrl_init();
+	osysmon_rtnl_init();
 
 	rc = vty_read_config_file(config_file, NULL);
 	if (rc < 0) {
@@ -145,6 +147,7 @@ int main(int argc, char **argv)
 		struct value_node *root = value_node_add(g_oss, NULL, "root", NULL);
 		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
+		osysmon_rtnl_poll(root);
 
 		display_update(root);
 		value_node_del(root);
