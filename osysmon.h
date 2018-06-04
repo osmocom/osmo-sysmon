@@ -2,9 +2,12 @@
 
 #include <osmocom/core/select.h>
 #include <osmocom/core/utils.h>
+#include <osmocom/vty/command.h>
 
 #include <stdbool.h>
 #include <linux/if.h>
+
+#include "value_node.h"
 
 /* information gathered from sysinfo(2) */
 struct osysmon_state_sysinfo {
@@ -31,6 +34,7 @@ struct osysmon_state_rtnl {
 	} default_route;
 };
 
+#if 0
 struct osysmon_state_gbproxy {
 	char ns_state[32];
 	char bssgp_state[32];
@@ -45,10 +49,26 @@ struct osysmon_state_bsc {
 	unsigned int num_bts;
 	char a_state[32];
 };
+#endif
 
 struct osysmon_state {
 	struct osysmon_state_sysinfo sysinfo;
 	struct osysmon_state_rtnl rtnl;
-	struct osysmon_state_rtnl gbproxy;
-	struct osysmon_state_rtnl bsc;
+
+	/* list of 'struct ctrl client' */
+	struct llist_head ctrl_clients;
 };
+
+extern struct osysmon_state *g_oss;
+
+
+
+enum osysmon_vty_node {
+	CTRL_CLIENT_NODE = _LAST_OSMOVTY_NODE + 1,
+	CTRL_CLIENT_GETVAR_NODE,
+};
+
+
+int osysmon_ctrl_go_parent(struct vty *vty);
+int osysmon_ctrl_init();
+int osysmon_ctrl_poll(struct value_node *parent);

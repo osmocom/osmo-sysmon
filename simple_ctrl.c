@@ -118,7 +118,6 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 	/* wait until connect (or timeout) happens */
 	FD_ZERO(&writeset);
 	FD_SET(fd, &writeset);
-	printf("inprogress");
 	rc = select(fd+1, NULL, &writeset, NULL, timeval_from_msec(tout_msec));
 	if (rc == 0) {
 		fprintf(stderr, "CTRL: timeout during connect\n");
