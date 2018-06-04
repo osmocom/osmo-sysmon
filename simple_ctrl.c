@@ -48,10 +48,12 @@ static ssize_t read_timeout(int fd, void *buf, size_t count, uint32_t tout_msec)
 
 	FD_ZERO(&readset);
 	FD_SET(fd, &readset);
-	tout.tv_sec = tout_msec/1000;
-	tout.tv_usec = (tout_msec%1000)*1000;
+	if (tout_msec) {
+		tout.tv_sec = tout_msec/1000;
+		tout.tv_usec = (tout_msec%1000)*1000;
+	}
 
-	rc = select(fd+1, &readset, NULL, NULL, &tout);
+	rc = select(fd+1, &readset, NULL, NULL, tout_msec ? &tout : NULL);
 	if (rc < 0)
 		return rc;
 
@@ -69,10 +71,12 @@ static ssize_t write_timeout(int fd, const void *buf, size_t count, uint32_t tou
 
 	FD_ZERO(&writeset);
 	FD_SET(fd, &writeset);
-	tout.tv_sec = tout_msec/1000;
-	tout.tv_usec = (tout_msec%1000)*1000;
+	if (tout_msec) {
+		tout.tv_sec = tout_msec/1000;
+		tout.tv_usec = (tout_msec%1000)*1000;
+	}
 
-	rc = select(fd+1, NULL, &writeset, NULL, &tout);
+	rc = select(fd+1, NULL, &writeset, NULL, tout_msec ? &tout : NULL);
 	if (rc < 0)
 		return rc;
 
