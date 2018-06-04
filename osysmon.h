@@ -17,6 +17,8 @@ struct osysmon_state {
 	struct llist_head ctrl_clients;
 	/* list of 'struct netdev' */
 	struct llist_head netdevs;
+	/* list of 'struct osysmon_file' */
+	struct llist_head files;
 };
 
 extern struct osysmon_state *g_oss;
@@ -40,3 +42,6 @@ int osysmon_rtnl_poll(struct value_node *parent);
 
 int osysmon_sysinfo_init();
 int osysmon_sysinfo_poll(struct value_node *parent);
+
+int osysmon_file_init();
+int osysmon_file_poll(struct value_node *parent);

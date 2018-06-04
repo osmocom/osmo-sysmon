@@ -127,11 +127,13 @@ int main(int argc, char **argv)
 	g_oss = talloc_zero(NULL, struct osysmon_state);
 	INIT_LLIST_HEAD(&g_oss->ctrl_clients);
 	INIT_LLIST_HEAD(&g_oss->netdevs);
+	INIT_LLIST_HEAD(&g_oss->files);
 
 	vty_init(&vty_info);
 	osysmon_sysinfo_init();
 	osysmon_ctrl_init();
 	osysmon_rtnl_init();
+	osysmon_file_init();
 
 	rc = vty_read_config_file(config_file, NULL);
 	if (rc < 0) {
@@ -148,6 +150,7 @@ int main(int argc, char **argv)
 		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
 		osysmon_rtnl_poll(root);
+		osysmon_file_poll(root);
 
 		display_update(root);
 		value_node_del(root);
