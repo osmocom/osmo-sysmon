@@ -63,8 +63,6 @@ struct ctrl_client_get_var {
 		/* display name, if any */
 		const char *display_name;
 	} cfg;
-	/* most recent value we received for this */
-	char *last_value;
 };
 
 static struct ctrl_client *ctrl_client_find(struct osysmon_state *os, const char *name)
@@ -275,27 +273,14 @@ static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 		cc->sch = simple_ctrl_open(cc, cc->cfg.remote_host, cc->cfg.remote_port, 1000);
 	/* abort, if that failed */
 	if (!cc->sch) {
-		llist_for_each_entry(ccgv, &cc->get_vars, list) {
-			if (ccgv->last_value) {
-				talloc_free(ccgv->last_value);
-				ccgv->last_value = talloc_strdup(ccgv, "<UNKNOWN>");
-			}
-		}
 		return -1;
 	}
 
 	llist_for_each_entry(ccgv, &cc->get_vars, list) {
 		char *value = simple_ctrl_get(cc->sch, ccgv->cfg.name);
-#if 0
-		if (ccgv->last_value) {
-			talloc_free(ccgv->last_value);
-			ccgv->last_value = NULL;
-		}
-		ccgv->last_value = value;
-#else
+
 		value_node_add(vn_clnt, vn_clnt, ccgv->cfg.name, value);
 		free(value); /* no talloc, this is from sscanf() */
-#endif
 	}
 	return 0;
 }
