@@ -110,15 +110,6 @@ static void signal_handler(int signal)
 	}
 }
 
-static void exit_help(void)
-{
-	printf("Usage:\n");
-	printf("\tosmo-ctrl-client HOST PORT get VARIABLE\n");
-	printf("\tosmo-ctrl-client HOST PORT set VARIABLE VALUE\n");
-	printf("\tosmo-ctrl-client HOST PORT monitor\n");
-	exit(2);
-}
-
 int main(int argc, char **argv)
 {
 	int rc;
