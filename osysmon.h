@@ -5,7 +5,6 @@
 #include <osmocom/vty/command.h>
 
 #include <stdbool.h>
-#include <linux/if.h>
 
 #include "value_node.h"
 
