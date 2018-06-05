@@ -13,7 +13,7 @@ AM_CFLAGS = \
 
 AM_LDFLAGS = \
 	$(COVERAGE_LDFLAGS) \
-	$(NUKK)
+	$(NULL)
 
 bin_PROGRAMS = \
 	osmo-sysmon \
