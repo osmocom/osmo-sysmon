@@ -173,7 +173,7 @@ static struct msgb *simple_ipa_receive(struct simple_ctrl_handle *sch)
 	}
 	len = ntohs(hh.len);
 
-	resp = msgb_alloc(len+sizeof(hh), "CTRL Rx");
+	resp = msgb_alloc(len+sizeof(hh)+1, "CTRL Rx");
 	if (!resp)
 		return NULL;
 	resp->l1h = msgb_put(resp, sizeof(hh));
@@ -196,6 +196,7 @@ struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch)
 	struct msgb *resp;
 	struct ipaccess_head *ih;
 	struct ipaccess_head_ext *ihe;
+	unsigned char *tmp;
 
 	/* loop until we've received a CTRL message */
 	while (true) {
@@ -207,9 +208,12 @@ struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch)
 		if (ih->proto == IPAC_PROTO_OSMO)
 			resp->l2h = resp->l2h+1;
 		ihe = (struct ipaccess_head_ext*) (resp->l1h + sizeof(*ih));
-		if (ih->proto == IPAC_PROTO_OSMO && ihe->proto == IPAC_PROTO_EXT_CTRL)
+		if (ih->proto == IPAC_PROTO_OSMO && ihe->proto == IPAC_PROTO_EXT_CTRL) {
+			/* Ensure data is NULL terminated */
+			tmp = msgb_put(resp, 1);
+			*tmp = '\0';
 			return resp;
-		else {
+		} else {
 			fprintf(stderr, "unknown IPA message %s\n", msgb_hexdump(resp));
 			msgb_free(resp);
 		}
@@ -246,7 +250,6 @@ static struct msgb *simple_ctrl_xceive(struct simple_ctrl_handle *sch, struct ms
 		return NULL;
 
 	/* FIXME: ignore any TRAP */
-	/* FIXME: check string is zero-terminated */
 	return simple_ctrl_receive(sch);
 }
 
