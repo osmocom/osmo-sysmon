@@ -304,6 +304,8 @@ int simple_ctrl_set(struct simple_ctrl_handle *sch, const char *var, const char 
 		return -1;
 	}
 	resp = simple_ctrl_xceive(sch, msg);
+	if (!resp)
+		return -1;
 
 	if (sscanf(msgb_l2(resp), "SET_REPLY %u %ms %ms", &rx_id, &rx_var, &rx_val) == 3) {
 		if (rx_id == sch->next_id-1 && !strcmp(var, rx_var) && !strcmp(val, rx_val)) {
