@@ -279,6 +279,15 @@ static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 	llist_for_each_entry(ccgv, &cc->get_vars, list) {
 		char *value = simple_ctrl_get(cc->sch, ccgv->cfg.name);
 
+		/* FIXME: Distinguish between ERROR reply and
+		 * connection issues */
+		/* Close connection on error */
+		if (!value) {
+			simple_ctrl_close(cc->sch);
+			cc->sch = NULL;
+			return 0;
+		}
+
 		value_node_add(vn_clnt, vn_clnt, ccgv->cfg.name, value);
 		free(value); /* no talloc, this is from sscanf() */
 	}
