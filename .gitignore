@@ -43,6 +43,7 @@ osysmon-*.tar.gz
 
 # apps and app data
 osysmon
+osmo-sysmon
 osmo-ctrl-client
 
 tags
