@@ -70,7 +70,7 @@ static struct vty_app_info vty_info = {
 };
 
 
-static const char *config_file = "osysmon.cfg";
+static const char *config_file = "osmo-sysmon.cfg";
 struct osysmon_state *g_oss;
 
 

@@ -127,4 +127,6 @@ dnl Generate the output
 AM_CONFIG_HEADER(config.h)
 
 AC_OUTPUT(
+    doc/Makefile
+    doc/examples/Makefile
     Makefile)

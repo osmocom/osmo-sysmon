@@ -1,3 +1,5 @@
+SUBDIRS = doc
+
 AM_CPPFLAGS = \
 	$(all_includes) \
 	-I$(top_srcdir) \
