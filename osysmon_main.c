@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 
 	rc = vty_read_config_file(config_file, NULL);
 	if (rc < 0) {
-		fprintf(stderr, "Failed to parse the config file\n");
+		fprintf(stderr, "Failed to parse the config file %s\n", config_file);
 		exit(2);
 	}
 
