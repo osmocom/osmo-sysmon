@@ -77,7 +77,7 @@ static void osysmon_file_destroy(struct osysmon_file *of)
 static void osysmon_file_read(struct osysmon_file *of, struct value_node *parent)
 {
 	char buf[512];
-	char *nl;
+	char *s, *nl;
 	FILE *f;
 
 	f = fopen(of->cfg.path, "r");
@@ -85,7 +85,9 @@ static void osysmon_file_read(struct osysmon_file *of, struct value_node *parent
 		value_node_add(parent, parent, of->cfg.name, "<NOTFOUND>");
 		return;
 	}
-	if (fgets(buf, sizeof(buf), f) == NULL) {
+	s = fgets(buf, sizeof(buf), f);
+	fclose(f);
+	if (s == NULL) {
 		value_node_add(parent, parent, of->cfg.name, "<EMPTY>");
 		return;
 	}
