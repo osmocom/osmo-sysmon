@@ -1,5 +1,7 @@
 SUBDIRS = doc
 
+ACLOCAL_AMFLAGS = -I m4
+
 AM_CPPFLAGS = \
 	$(all_includes) \
 	-I$(top_srcdir) \
