@@ -129,4 +129,5 @@ AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(
     doc/Makefile
     doc/examples/Makefile
+    src/Makefile
     Makefile)
