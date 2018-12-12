@@ -1,0 +1,11 @@
+[Unit]
+Description=Osmocom System Monitoring daemon
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/osmo-sysmon -c /etc/osmocom/osmo-sysmon.cfg
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
