@@ -38,14 +38,7 @@
 struct ctrl_client {
 	/* links to osysmon.ctrl_clients */
 	struct llist_head list;
-	struct {
-		/* name of this CTRL client */
-		const char *name;
-		/* remote host/IP */
-		const char *remote_host;
-		/* remote CTRL port */
-		uint16_t remote_port;
-	} cfg;
+	struct ctrl_cfg cfg;
 	struct simple_ctrl_handle *sch;
 	/* list of ctrl_client_get_var objects */
 	struct llist_head get_vars;
