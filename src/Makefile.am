@@ -1,3 +1,5 @@
+LDADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
+
 AM_CPPFLAGS = \
 	$(all_includes) \
 	-I$(top_srcdir) \
@@ -20,9 +22,7 @@ bin_PROGRAMS = \
 	osmo-ctrl-client \
 	$(NULL)
 
-osmo_sysmon_LDADD = \
-	$(LIBOSMOCORE_LIBS) \
-	$(LIBOSMOGSM_LIBS) \
+osmo_sysmon_LDADD = $(LDADD) \
 	$(LIBOSMOVTY_LIBS) \
 	$(LIBMNL_LIBS) \
 	$(NULL)
@@ -35,11 +35,6 @@ osmo_sysmon_SOURCES = \
 	osysmon_rtnl.c \
 	osysmon_file.c \
 	osysmon_main.c \
-	$(NULL)
-
-osmo_ctrl_client_LDADD = \
-	$(LIBOSMOCORE_LIBS) \
-	$(LIBOSMOGSM_LIBS) \
 	$(NULL)
 
 osmo_ctrl_client_SOURCES = \
