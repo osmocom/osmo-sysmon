@@ -16,7 +16,7 @@ struct value_node {
 	struct llist_head children;
 };
 
-struct value_node *value_node_add(void *ctx, struct value_node *parent,
+struct value_node *value_node_add(struct value_node *parent,
 				  const char *name, const char *value);
 struct value_node *value_node_find(struct value_node *parent, const char *name);
 struct value_node *value_node_find_by_idx(struct value_node *parent, int idx);

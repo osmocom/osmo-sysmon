@@ -63,7 +63,7 @@ int osysmon_sysinfo_poll(struct value_node *parent)
 	char buf[32];
 	int rc;
 
-	vn_sysinfo = value_node_add(parent, parent, "sysinfo", NULL);
+	vn_sysinfo = value_node_add(parent, "sysinfo", NULL);
 
 	rc = sysinfo(&si);
 	if (rc < 0)
@@ -72,17 +72,17 @@ int osysmon_sysinfo_poll(struct value_node *parent)
 	/* Load Factor 1/5/15min */
 	snprintf(buf, sizeof(buf), "%.2f/%.2f/%.2f",
 		 loadfac(si.loads[0]), loadfac(si.loads[1]), loadfac(si.loads[2]));
-	value_node_add(vn_sysinfo, vn_sysinfo, "load", buf);
+	value_node_add(vn_sysinfo, "load", buf);
 
 	/* RAM information (total/free/sared) in megabytes */
 	snprintf(buf, sizeof(buf), "%lu/%lu/%lu",
 		to_mbytes(si.totalram), to_mbytes(si.freeram), to_mbytes(si.sharedram));
-	value_node_add(vn_sysinfo, vn_sysinfo, "ram", buf);
+	value_node_add(vn_sysinfo, "ram", buf);
 
 	/* uptime in days/hours/minutes/seconds */
 	snprintf(buf, sizeof(buf), "%lud %02lu:%02lu:%02lu", to_days(si.uptime),
 		 to_hours(si.uptime), to_minutes(si.uptime), to_seconds(si.uptime));
-	value_node_add(vn_sysinfo, vn_sysinfo, "uptime", buf);
+	value_node_add(vn_sysinfo, "uptime", buf);
 
 	return 0;
 }

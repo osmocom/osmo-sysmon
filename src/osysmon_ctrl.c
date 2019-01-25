@@ -266,7 +266,7 @@ int osysmon_ctrl_init()
 static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 {
 	struct ctrl_client_get_var *ccgv;
-	struct value_node *vn_clnt = value_node_add(parent, parent, cc->cfg.name, NULL);
+	struct value_node *vn_clnt = value_node_add(parent, cc->cfg.name, NULL);
 
 	/* attempt to re-connect */
 	if (!cc->sch)
@@ -288,7 +288,7 @@ static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 			return 0;
 		}
 
-		value_node_add(vn_clnt, vn_clnt, ccgv->cfg.name, value);
+		value_node_add(vn_clnt, ccgv->cfg.name, value);
 		free(value); /* no talloc, this is from sscanf() */
 	}
 	return 0;

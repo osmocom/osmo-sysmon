@@ -229,7 +229,7 @@ int main(int argc, char **argv)
 	}
 
 	while (1) {
-		struct value_node *root = value_node_add(g_oss, NULL, "root", NULL);
+		struct value_node *root = value_node_add(NULL, "root", NULL);
 		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
 		osysmon_rtnl_poll(root);

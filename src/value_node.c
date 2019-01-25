@@ -27,7 +27,7 @@
 
 #include "value_node.h"
 
-struct value_node *value_node_add(void *ctx, struct value_node *parent,
+struct value_node *value_node_add(struct value_node *parent,
 				  const char *name, const char *value)
 {
 	struct value_node *vn = talloc_zero(parent, struct value_node);
@@ -67,7 +67,7 @@ struct value_node *value_node_find_or_add(struct value_node *parent, const char 
 	struct value_node *vn;
 	vn = value_node_find(parent, name);
 	if (!vn)
-		vn = value_node_add(parent, parent, name, NULL);
+		vn = value_node_add(parent, name, NULL);
 	return vn;
 }
 

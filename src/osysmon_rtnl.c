@@ -216,17 +216,17 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 		uint8_t *hwaddr = mnl_attr_get_payload(tb[IFLA_ADDRESS]);
 		snprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x",
 			 hwaddr[0], hwaddr[1], hwaddr[2], hwaddr[3], hwaddr[4], hwaddr[5]);
-		value_node_add(vn_if, vn_if, "hwaddr", buf);
+		value_node_add(vn_if, "hwaddr", buf);
 	}
 	if (ifm->ifi_flags & IFF_RUNNING) 
-		value_node_add(vn_if, vn_if, "running", "true");
+		value_node_add(vn_if, "running", "true");
 	else
-		value_node_add(vn_if, vn_if, "running", "false");
+		value_node_add(vn_if, "running", "false");
 
 	if (ifm->ifi_flags & IFF_UP)
-		value_node_add(vn_if, vn_if, "up", "true");
+		value_node_add(vn_if, "up", "true");
 	else
-		value_node_add(vn_if, vn_if, "up", "false");
+		value_node_add(vn_if, "up", "false");
 
 	return MNL_CB_OK;
 }
@@ -313,7 +313,7 @@ static int inet_data_cb(const struct nlmsghdr *nlh, void *data)
 		struct in_addr *addr = mnl_attr_get_payload(tb[IFA_ADDRESS]);
 		char out[INET_ADDRSTRLEN+32];
 		snprintf(out, sizeof(out), "%s/%u", inet_ntoa(*addr), ifa->ifa_prefixlen);
-		value_node_add(vn_if, vn_if, "ip", out);
+		value_node_add(vn_if, "ip", out);
 	}
 
 	return MNL_CB_OK;
@@ -404,7 +404,7 @@ int osysmon_rtnl_poll(struct value_node *parent)
 	if (!g_oss->rcs)
 		g_oss->rcs = rtnl_init(NULL);
 
-	vn_net = value_node_add(parent, parent, "netdev", NULL);
+	vn_net = value_node_add(parent, "netdev", NULL);
 
 	if (!g_oss->rcs)
 		return -1;

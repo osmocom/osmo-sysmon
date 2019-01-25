@@ -82,19 +82,19 @@ static void osysmon_file_read(struct osysmon_file *of, struct value_node *parent
 
 	f = fopen(of->cfg.path, "r");
 	if (!f) {
-		value_node_add(parent, parent, of->cfg.name, "<NOTFOUND>");
+		value_node_add(parent, of->cfg.name, "<NOTFOUND>");
 		return;
 	}
 	s = fgets(buf, sizeof(buf), f);
 	fclose(f);
 	if (s == NULL) {
-		value_node_add(parent, parent, of->cfg.name, "<EMPTY>");
+		value_node_add(parent, of->cfg.name, "<EMPTY>");
 		return;
 	}
 	buf[sizeof(buf)-1] = '\0';
 	while ((nl = strrchr(buf, '\n')))
 		*nl = '\0';
-	value_node_add(parent, parent, of->cfg.name, buf);
+	value_node_add(parent, of->cfg.name, buf);
 }
 
 /***********************************************************************
@@ -153,7 +153,7 @@ int osysmon_file_poll(struct value_node *parent)
 	struct value_node *vn_file;
 	struct osysmon_file *of;
 
-	vn_file = value_node_add(parent, parent, "file", NULL);
+	vn_file = value_node_add(parent, "file", NULL);
 
 	llist_for_each_entry(of, &g_oss->files, list)
 		osysmon_file_read(of, vn_file);
