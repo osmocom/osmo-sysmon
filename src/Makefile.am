@@ -24,11 +24,12 @@ noinst_LTLIBRARIES = libintern.la
 libintern_la_SOURCES = simple_ctrl.c
 libintern_la_LIBADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
 
-osmo_sysmon_CFLAGS = $(LIBMNL_CFLAGS) $(LIBOSMOVTY_CFLAGS) $(AM_CFLAGS)
+osmo_sysmon_CFLAGS = $(LIBMNL_CFLAGS) $(LIBOSMOVTY_CFLAGS) $(LIBOPING_CFLAGS) $(AM_CFLAGS)
 
 osmo_sysmon_LDADD = $(LDADD) \
 	$(LIBOSMOVTY_LIBS) \
 	$(LIBMNL_LIBS) \
+	$(LIBOPING_LIBS) \
 	$(NULL)
 
 osmo_sysmon_SOURCES = \
@@ -37,6 +38,7 @@ osmo_sysmon_SOURCES = \
 	osysmon_sysinfo.c \
 	osysmon_rtnl.c \
 	osysmon_file.c \
+	osysmon_ping.c \
 	osysmon_main.c \
 	$(NULL)
 

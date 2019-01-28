@@ -193,7 +193,7 @@ static void handle_options(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	int rc;
+	int rc, ping_init;
 
 	osmo_init_logging2(NULL, &log_info);
 
@@ -207,6 +207,7 @@ int main(int argc, char **argv)
 	osysmon_sysinfo_init();
 	osysmon_ctrl_init();
 	osysmon_rtnl_init();
+	ping_init = osysmon_ping_init();
 	osysmon_file_init();
 
 	rc = vty_read_config_file(cmdline_opts.config_file, NULL);
@@ -233,6 +234,10 @@ int main(int argc, char **argv)
 		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
 		osysmon_rtnl_poll(root);
+
+		if (ping_init == 0)
+			osysmon_ping_poll(root);
+
 		osysmon_file_poll(root);
 
 		display_update(root);
