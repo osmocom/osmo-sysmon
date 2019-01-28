@@ -283,7 +283,11 @@ char *simple_ctrl_get(struct simple_ctrl_handle *sch, const char *var)
 		return NULL;
 
 	rc = sscanf(msgb_l2(resp), "GET_REPLY %u %ms %ms", &rx_id, &rx_var, &rx_val);
-	if (rc == 3) {
+	if ((rc == 2) || (rc == 3)) {
+		/* If body is empty return an empty string */
+		if (rc == 2)
+			rx_val = strdup("");
+
 		if (rx_id == sch->next_id-1 && !strcmp(var, rx_var)) {
 			free(rx_var);
 			msgb_free(resp);
