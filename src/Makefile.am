@@ -1,4 +1,4 @@
-LDADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
+LDADD = libintern.la $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
 
 AM_CPPFLAGS = \
 	$(all_includes) \
@@ -9,8 +9,6 @@ AM_CFLAGS = \
 	-Wall \
 	$(LIBOSMOCORE_CFLAGS) \
 	$(LIBOSMOGSM_CFLAGS) \
-	$(LIBOSMOVTY_CFLAGS) \
-	$(LIBMNL_CFLAGS) \
 	$(NULL)
 
 AM_LDFLAGS = \
@@ -22,6 +20,12 @@ bin_PROGRAMS = \
 	osmo-ctrl-client \
 	$(NULL)
 
+noinst_LTLIBRARIES = libintern.la
+libintern_la_SOURCES = simple_ctrl.c
+libintern_la_LIBADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
+
+osmo_sysmon_CFLAGS = $(LIBMNL_CFLAGS) $(LIBOSMOVTY_CFLAGS) $(AM_CFLAGS)
+
 osmo_sysmon_LDADD = $(LDADD) \
 	$(LIBOSMOVTY_LIBS) \
 	$(LIBMNL_LIBS) \
@@ -29,17 +33,11 @@ osmo_sysmon_LDADD = $(LDADD) \
 
 osmo_sysmon_SOURCES = \
 	value_node.c \
-	simple_ctrl.c \
 	osysmon_ctrl.c \
 	osysmon_sysinfo.c \
 	osysmon_rtnl.c \
 	osysmon_file.c \
 	osysmon_main.c \
-	$(NULL)
-
-osmo_ctrl_client_SOURCES = \
-	simple_ctrl.c \
-	osmo-ctrl-client.c \
 	$(NULL)
 
 noinst_HEADERS = \

@@ -59,3 +59,4 @@ tests/testsuite
 tests/testsuite.log
 
 writtenconfig/
+libintern.la
