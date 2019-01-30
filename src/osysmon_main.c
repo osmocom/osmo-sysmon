@@ -210,16 +210,16 @@ int main(int argc, char **argv)
 	ping_init = osysmon_ping_init();
 	osysmon_file_init();
 
+	signal(SIGUSR1, &signal_handler);
+	signal(SIGUSR2, &signal_handler);
+	osmo_init_ignore_signals();
+
 	rc = vty_read_config_file(cmdline_opts.config_file, NULL);
 	if (rc < 0) {
 		fprintf(stderr, "Failed to parse the config file %s\n",
 			cmdline_opts.config_file);
 		exit(2);
 	}
-
-	signal(SIGUSR1, &signal_handler);
-	signal(SIGUSR2, &signal_handler);
-	osmo_init_ignore_signals();
 
 	if (cmdline_opts.daemonize) {
 		rc = osmo_daemonize();
