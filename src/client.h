@@ -23,3 +23,8 @@ struct host_cfg {
 struct host_cfg *host_cfg_alloc(void *ctx, const char *name, const char *host, uint16_t port);
 bool match_config(const struct host_cfg *cfg, const char *match, enum match_kind k);
 char *make_authority(void *ctx, const struct host_cfg *cfg);
+
+struct osmo_stream_cli *make_tcp_client(struct host_cfg *cfg);
+
+void update_name(struct host_cfg *cfg, const char *new_name);
+void update_host(struct host_cfg *cfg, const char *new_host);

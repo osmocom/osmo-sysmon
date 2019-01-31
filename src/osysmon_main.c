@@ -199,6 +199,7 @@ int main(int argc, char **argv)
 
 	g_oss = talloc_zero(NULL, struct osysmon_state);
 	INIT_LLIST_HEAD(&g_oss->ctrl_clients);
+	INIT_LLIST_HEAD(&g_oss->openvpn_clients);
 	INIT_LLIST_HEAD(&g_oss->netdevs);
 	INIT_LLIST_HEAD(&g_oss->files);
 
@@ -206,6 +207,7 @@ int main(int argc, char **argv)
 	handle_options(argc, argv);
 	osysmon_sysinfo_init();
 	osysmon_ctrl_init();
+	osysmon_openvpn_init();
 	osysmon_rtnl_init();
 	ping_init = osysmon_ping_init();
 	osysmon_file_init();
@@ -231,6 +233,7 @@ int main(int argc, char **argv)
 
 	while (1) {
 		struct value_node *root = value_node_add(NULL, "root", NULL);
+		int vpns = osysmon_openvpn_poll(root);
 		osysmon_sysinfo_poll(root);
 		osysmon_ctrl_poll(root);
 		osysmon_rtnl_poll(root);
@@ -242,6 +245,10 @@ int main(int argc, char **argv)
 
 		display_update(root);
 		value_node_del(root);
+
+		if (vpns)
+			osmo_select_main(0);
+
 		sleep(1);
 	}
 

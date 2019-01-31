@@ -27,6 +27,7 @@
 #include <talloc.h>
 
 #include <osmocom/core/utils.h>
+#include <osmocom/netif/stream.h>
 
 #include "client.h"
 
@@ -70,4 +71,25 @@ char *make_authority(void *ctx, const struct host_cfg *cfg)
 		return NULL;
 
 	return talloc_asprintf(ctx, "%s:%u", cfg->remote_host, cfg->remote_port);
+}
+
+struct osmo_stream_cli *make_tcp_client(struct host_cfg *cfg)
+{
+	struct osmo_stream_cli *cl = osmo_stream_cli_create(cfg);
+	if (cl) {
+		osmo_stream_cli_set_addr(cl, cfg->remote_host);
+		osmo_stream_cli_set_port(cl, cfg->remote_port);
+	}
+
+	return cl;
+}
+
+void update_name(struct host_cfg *cfg, const char *new_name)
+{
+	osmo_talloc_replace_string(cfg, (char **)&cfg->name, new_name);
+}
+
+void update_host(struct host_cfg *cfg, const char *new_host)
+{
+	osmo_talloc_replace_string(cfg, (char **)&cfg->remote_host, new_host);
 }

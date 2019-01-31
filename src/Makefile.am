@@ -9,6 +9,7 @@ AM_CFLAGS = \
 	-Wall \
 	$(LIBOSMOCORE_CFLAGS) \
 	$(LIBOSMOGSM_CFLAGS) \
+	$(LIBOSMONETIF_CFLAGS) \
 	$(NULL)
 
 AM_LDFLAGS = \
@@ -22,12 +23,13 @@ bin_PROGRAMS = \
 
 noinst_LTLIBRARIES = libintern.la
 libintern_la_SOURCES = simple_ctrl.c client.c
-libintern_la_LIBADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
+libintern_la_LIBADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS) $(LIBOSMONETIF_LIBS)
 
 osmo_sysmon_CFLAGS = $(LIBMNL_CFLAGS) $(LIBOSMOVTY_CFLAGS) $(LIBOPING_CFLAGS) $(AM_CFLAGS)
 
 osmo_sysmon_LDADD = $(LDADD) \
 	$(LIBOSMOVTY_LIBS) \
+	$(LIBOSMONETIF_LIBS) \
 	$(LIBMNL_LIBS) \
 	$(LIBOPING_LIBS) \
 	$(NULL)
@@ -39,6 +41,7 @@ osmo_sysmon_SOURCES = \
 	osysmon_rtnl.c \
 	osysmon_file.c \
 	osysmon_ping.c \
+	osysmon_openvpn.c \
 	osysmon_main.c \
 	$(NULL)
 

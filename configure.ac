@@ -42,6 +42,7 @@ PKG_CHECK_MODULES(LIBOSMOCORE, libosmocore >= 0.11.0)
 PKG_CHECK_MODULES(LIBOSMOVTY, libosmovty >= 0.11.0)
 PKG_CHECK_MODULES(LIBOSMOCTRL, libosmoctrl >= 0.11.0)
 PKG_CHECK_MODULES(LIBOSMOGSM, libosmogsm >= 0.11.0)
+PKG_CHECK_MODULES(LIBOSMONETIF, libosmo-netif >= 0.4.0)
 PKG_CHECK_MODULES(LIBMNL, libmnl)
 dnl FIXME: bump to 1.10.0 once it's available on build slaves and remove workaround from osysmon_ping.c
 PKG_CHECK_MODULES(LIBOPING, liboping >= 1.9.0)
