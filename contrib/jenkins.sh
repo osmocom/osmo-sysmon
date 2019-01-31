@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# jenkins build helper script for openbsc.  This is how we build on jenkins.osmocom.org
+# jenkins build helper: this is how we build on jenkins.osmocom.org
 
 if ! [ -x "$(command -v osmo-build-dep.sh)" ]; then
 	echo "Error: We need to have scripts/osmo-deps.sh from http://git.osmocom.org/osmo-ci/ in PATH !"
@@ -37,8 +37,7 @@ cd "$base"
 autoreconf --install --force
 ./configure --enable-sanitize --enable-external-tests --enable-werror
 $MAKE $PARALLEL_MAKE
-#LD_LIBRARY_PATH="$inst/lib" $MAKE check \
-#  || cat-testlogs.sh
+
 LD_LIBRARY_PATH="$inst/lib" \
   DISTCHECK_CONFIGURE_FLAGS="--enable-vty-tests --enable-external-tests --enable-werror" \
   $MAKE distcheck \
