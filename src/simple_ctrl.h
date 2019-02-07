@@ -2,16 +2,6 @@
 
 #include <stdint.h>
 
-/* a CTRL client config */
-struct ctrl_cfg {
-	/* name of this CTRL client */
-	const char *name;
-	/* remote host/IP */
-	const char *remote_host;
-	/* remote CTRL port */
-	uint16_t remote_port;
-};
-
 struct simple_ctrl_handle;
 
 struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_t dport,

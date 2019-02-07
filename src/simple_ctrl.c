@@ -35,10 +35,11 @@
 #include <osmocom/gsm/ipa.h>
 #include <osmocom/gsm/protocol/ipaccess.h>
 
+#include "client.h"
 #include "simple_ctrl.h"
 
-#define CTRL_ERR(cfg, fmt, args...) \
-	fprintf(stderr, "CTRL %s:%u error: " fmt, cfg.remote_host, cfg.remote_port, ##args)
+#define CTRL_ERR(sch, fmt, args...) \
+	fprintf(stderr, "CTRL %s error: " fmt, make_authority(sch, &sch->cfg), ##args)
 
 /***********************************************************************
  * blocking I/O with timeout helpers
@@ -101,7 +102,7 @@ struct simple_ctrl_handle {
 	int fd;
 	uint32_t next_id;
 	uint32_t tout_msec;
-	struct ctrl_cfg cfg;
+	struct host_cfg cfg;
 };
 
 struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_t dport,
@@ -122,7 +123,7 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 	fd = osmo_sock_init(AF_INET, SOCK_STREAM, IPPROTO_TCP, host, dport,
 			    OSMO_SOCK_F_CONNECT | OSMO_SOCK_F_NONBLOCK);
 	if (fd < 0) {
-		CTRL_ERR(sch->cfg, "connecting socket: %s\n", strerror(errno));
+		CTRL_ERR(sch, "connecting socket: %s\n", strerror(errno));
 		return NULL;
 	}
 
@@ -131,17 +132,17 @@ struct simple_ctrl_handle *simple_ctrl_open(void *ctx, const char *host, uint16_
 	FD_SET(fd, &writeset);
 	rc = select(fd+1, NULL, &writeset, NULL, timeval_from_msec(tout_msec));
 	if (rc == 0) {
-		CTRL_ERR(sch->cfg, "timeout during connect\n");
+		CTRL_ERR(sch, "timeout during connect\n");
 		goto out_close;
 	}
 	if (rc < 0) {
-		CTRL_ERR(sch->cfg, "error connecting socket: %s\n", strerror(errno));
+		CTRL_ERR(sch, "error connecting socket: %s\n", strerror(errno));
 		goto out_close;
 	}
 
 	/* set FD blocking again */
 	if (ioctl(fd, FIONBIO, (unsigned char *)&off) < 0) {
-		CTRL_ERR(sch->cfg, "cannot set socket blocking: %s\n", strerror(errno));
+		CTRL_ERR(sch, "cannot set socket blocking: %s\n", strerror(errno));
 		goto out_close;
 	}
 
@@ -173,10 +174,10 @@ static struct msgb *simple_ipa_receive(struct simple_ctrl_handle *sch)
 
 	rc = read_timeout(sch->fd, (uint8_t *) &hh, sizeof(hh), sch->tout_msec);
 	if (rc < 0) {
-		CTRL_ERR(sch->cfg, "read(): %d\n", rc);
+		CTRL_ERR(sch, "read(): %d\n", rc);
 		return NULL;
 	} else if (rc < sizeof(hh)) {
-		CTRL_ERR(sch->cfg, "short read (header)\n");
+		CTRL_ERR(sch, "short read (header)\n");
 		return NULL;
 	}
 	len = ntohs(hh.len);
@@ -190,7 +191,7 @@ static struct msgb *simple_ipa_receive(struct simple_ctrl_handle *sch)
 	resp->l2h = resp->tail;
 	rc = read(sch->fd, resp->l2h, len);
 	if (rc < len) {
-		CTRL_ERR(sch->cfg, "short read (payload)\n");
+		CTRL_ERR(sch, "short read (payload)\n");
 		msgb_free(resp);
 		return NULL;
 	}
@@ -222,7 +223,7 @@ struct msgb *simple_ctrl_receive(struct simple_ctrl_handle *sch)
 			*tmp = '\0';
 			return resp;
 		} else {
-			CTRL_ERR(sch->cfg, "unknown IPA message %s\n", msgb_hexdump(resp));
+			CTRL_ERR(sch, "unknown IPA message %s\n", msgb_hexdump(resp));
 			msgb_free(resp);
 		}
 	}
@@ -237,10 +238,10 @@ static int simple_ctrl_send(struct simple_ctrl_handle *sch, struct msgb *msg)
 
 	rc = write_timeout(sch->fd, msg->data, msg->len, sch->tout_msec);
 	if (rc < 0) {
-		CTRL_ERR(sch->cfg, "write(): %d\n", rc);
+		CTRL_ERR(sch, "write(): %d\n", rc);
 		return rc;
 	} else if (rc < msg->len) {
-		CTRL_ERR(sch->cfg, "short write\n");
+		CTRL_ERR(sch, "short write\n");
 		msgb_free(msg);
 		return -1;
 	} else {
@@ -291,7 +292,7 @@ char *simple_ctrl_get(struct simple_ctrl_handle *sch, const char *var)
 		free(rx_var);
 		free(rx_val);
 	} else {
-		CTRL_ERR(sch->cfg, "GET(%s) results in '%s'\n", var, (char *)msgb_l2(resp));
+		CTRL_ERR(sch, "GET(%s) results in '%s'\n", var, (char *)msgb_l2(resp));
 	}
 
 	msgb_free(resp);
@@ -329,7 +330,7 @@ int simple_ctrl_set(struct simple_ctrl_handle *sch, const char *var, const char 
 			free(rx_var);
 		}
 	} else {
-		CTRL_ERR(sch->cfg, "SET(%s=%s) results in '%s'\n", var, val, (char *) msgb_l2(resp));
+		CTRL_ERR(sch, "SET(%s=%s) results in '%s'\n", var, val, (char *) msgb_l2(resp));
 	}
 
 	msgb_free(resp);

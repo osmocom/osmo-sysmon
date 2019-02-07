@@ -21,7 +21,7 @@ bin_PROGRAMS = \
 	$(NULL)
 
 noinst_LTLIBRARIES = libintern.la
-libintern_la_SOURCES = simple_ctrl.c
+libintern_la_SOURCES = simple_ctrl.c client.c
 libintern_la_LIBADD = $(LIBOSMOCORE_LIBS) $(LIBOSMOGSM_LIBS)
 
 osmo_sysmon_CFLAGS = $(LIBMNL_CFLAGS) $(LIBOSMOVTY_CFLAGS) $(LIBOPING_CFLAGS) $(AM_CFLAGS)
@@ -44,6 +44,7 @@ osmo_sysmon_SOURCES = \
 
 noinst_HEADERS = \
 	osysmon.h \
+	client.h \
 	simple_ctrl.h \
 	value_node.h \
 	$(NULL)

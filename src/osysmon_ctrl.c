@@ -26,6 +26,7 @@
 #include <osmocom/vty/vty.h>
 #include <osmocom/vty/command.h>
 
+#include "client.h"
 #include "osysmon.h"
 #include "simple_ctrl.h"
 #include "value_node.h"
@@ -38,7 +39,7 @@
 struct ctrl_client {
 	/* links to osysmon.ctrl_clients */
 	struct llist_head list;
-	struct ctrl_cfg cfg;
+	struct host_cfg *cfg;
 	struct simple_ctrl_handle *sch;
 	/* list of ctrl_client_get_var objects */
 	struct llist_head get_vars;
@@ -62,7 +63,7 @@ static struct ctrl_client *ctrl_client_find(struct osysmon_state *os, const char
 {
 	struct ctrl_client *cc;
 	llist_for_each_entry(cc, &os->ctrl_clients, list) {
-		if (!strcmp(name, cc->cfg.name))
+		if (match_config(cc->cfg, name, MATCH_NAME))
 			return cc;
 	}
 	return NULL;
@@ -79,9 +80,13 @@ static struct ctrl_client *ctrl_client_create(struct osysmon_state *os, const ch
 	cc = talloc_zero(os, struct ctrl_client);
 	if (!cc)
 		return NULL;
-	cc->cfg.name = talloc_strdup(cc, name);
-	cc->cfg.remote_host = talloc_strdup(cc, host);
-	cc->cfg.remote_port = port;
+
+	cc->cfg = host_cfg_alloc(cc, name, host, port);
+	if (!cc->cfg) {
+		talloc_free(cc);
+		return NULL;
+	}
+
 	INIT_LLIST_HEAD(&cc->get_vars);
 	llist_add_tail(&cc->list, &os->ctrl_clients);
 	/* FIXME */
@@ -156,10 +161,10 @@ DEFUN(cfg_ctrl_client, cfg_ctrl_client_cmd,
 	struct ctrl_client *cc;
 	cc = ctrl_client_find(g_oss, argv[0]);
 	if (cc) {
-		if ((strcmp(cc->cfg.remote_host, argv[1])) ||
-		    (cc->cfg.remote_port != atoi(argv[2]))) {
+		if ((strcmp(cc->cfg->remote_host, argv[1])) ||
+		    (cc->cfg->remote_port != atoi(argv[2]))) {
 			vty_out(vty, "Client %s has different IP/port, please remove it first%s",
-				cc->cfg.name, VTY_NEWLINE);
+				cc->cfg->name, VTY_NEWLINE);
 			return CMD_WARNING;
 		}
 	} else
@@ -215,8 +220,8 @@ DEFUN(cfg_ctrlc_no_get_var, cfg_ctrlc_no_get_var_cmd,
 static void write_one_ctrl_client(struct vty *vty, struct ctrl_client *cc)
 {
 	struct ctrl_client_get_var *ccgv;
-	vty_out(vty, "ctrl-client %s %s %u%s", cc->cfg.name,
-		cc->cfg.remote_host, cc->cfg.remote_port, VTY_NEWLINE);
+	vty_out(vty, "ctrl-client %s %s %u%s", cc->cfg->name,
+		cc->cfg->remote_host, cc->cfg->remote_port, VTY_NEWLINE);
 	llist_for_each_entry(ccgv, &cc->get_vars, list) {
 		vty_out(vty, " get-variable %s%s", ccgv->cfg.name, VTY_NEWLINE);
 		if (ccgv->cfg.display_name)
@@ -259,11 +264,11 @@ int osysmon_ctrl_init()
 static int ctrl_client_poll(struct ctrl_client *cc, struct value_node *parent)
 {
 	struct ctrl_client_get_var *ccgv;
-	struct value_node *vn_clnt = value_node_add(parent, cc->cfg.name, NULL);
+	struct value_node *vn_clnt = value_node_add(parent, cc->cfg->name, NULL);
 
 	/* attempt to re-connect */
 	if (!cc->sch)
-		cc->sch = simple_ctrl_open(cc, cc->cfg.remote_host, cc->cfg.remote_port, 1000);
+		cc->sch = simple_ctrl_open(cc, cc->cfg->remote_host, cc->cfg->remote_port, 1000);
 	/* abort, if that failed */
 	if (!cc->sch) {
 		return -1;
