@@ -15,7 +15,7 @@ struct host_cfg {
 	/* name of this client */
 	const char *name;
 	/* remote host/IP */
-	const char *remote_host;
+	char *remote_host;
 	/* remote port */
 	uint16_t remote_port;
 };

@@ -113,12 +113,26 @@ static struct openvpn_client *openvpn_client_find_or_make(const struct osysmon_s
 	return NULL;
 }
 
+static int disconnect_cb(struct osmo_stream_cli *conn)
+{
+	struct openvpn_client *vpn = osmo_stream_cli_get_data(conn);
+
+	update_name(vpn->rem_cfg, "management interface unavailable");
+	vpn->connected = false;
+	talloc_free(vpn->tun_ip);
+	talloc_free(vpn->rem_cfg->remote_host);
+	vpn->tun_ip = NULL;
+	vpn->rem_cfg->remote_host = NULL;
+
+	return 0;
+}
+
 static int connect_cb(struct osmo_stream_cli *conn)
 {
 	struct openvpn_client *vpn = osmo_stream_cli_get_data(conn);
 
 	update_name(vpn->rem_cfg, "management interface incompatible");
-	vpn->connected = true; /* FIXME: there's no callback for lost connection to drop this flag */
+	vpn->connected = true;
 
 	return 0;
 }
@@ -174,6 +188,7 @@ static bool openvpn_client_create(struct osysmon_state *os, const char *name, co
 	osmo_stream_cli_set_reconnect_timeout(vpn->mgmt, 60);
 	osmo_stream_cli_set_read_cb(vpn->mgmt, read_cb);
 	osmo_stream_cli_set_connect_cb(vpn->mgmt, connect_cb);
+	osmo_stream_cli_set_disconnect_cb(vpn->mgmt, disconnect_cb);
 
 	if (osmo_stream_cli_open(vpn->mgmt) < 0) {
 		OVPN_LOG(vpn->rem_cfg, vpn, "failed to connect to management interface\n");
@@ -261,7 +276,6 @@ static int openvpn_client_poll(struct openvpn_client *vpn, struct value_node *pa
 	if (remote)
 		value_node_add(vn_host, "remote", remote);
 
-	/* FIXME: there's no way to check client state so this might be triggered even while it's reconnecting */
 	if (vpn->connected) { /* re-trigger state command */
 		msgb_printf(msg, "state\n");
 		osmo_stream_cli_send(vpn->mgmt, msg);
