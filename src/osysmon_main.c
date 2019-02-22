@@ -123,7 +123,7 @@ static void print_help()
 	printf("  -s --disable-color         Do not print ANSI colors in the log\n");
 	printf("  -T --timestamp             Prefix every log line with a timestamp.\n");
 	printf("  -e --log-level number      Set a global loglevel.\n");
-	printf("  -V --version               Print the version of OsmoHLR.\n");
+	printf("  -V --version               Print the version of osmo-sysmon.\n");
 }
 
 static struct {
