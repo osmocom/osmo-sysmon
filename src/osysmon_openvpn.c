@@ -61,7 +61,7 @@ struct openvpn_client {
 
 static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 {
-	char tmp[128];
+	char tmp[128], buf[128];
 	char *tok;
 	unsigned int i = 0;
 	uint8_t *m = msgb_data(msg);
@@ -85,9 +85,13 @@ static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 		/* The string format is documented in https://openvpn.net/community-resources/management-interface/ */
 		if (tok) { /* Parse csv string and pick interesting tokens while ignoring the rest. */
 			switch (i++) {
+			/* case 0: unix/date time, not needed */
 			case 1:
 				update_name(vpn->rem_cfg, tok);
 				break;
+			case 2:
+				snprintf(buf, sizeof(buf), "%s (%s)", vpn->rem_cfg->name, tok);
+				update_name(vpn->rem_cfg, buf);
 			case 3:
 				osmo_talloc_replace_string(vpn->rem_cfg, &vpn->tun_ip, tok);
 				break;
