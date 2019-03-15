@@ -185,7 +185,7 @@ static bool openvpn_client_create(struct osysmon_state *os, const char *name, co
 	}
 
 	/* Wait for 1 minute before attempting to reconnect to management interface */
-	osmo_stream_cli_set_reconnect_timeout(vpn->mgmt, 60);
+	osmo_stream_cli_set_reconnect_timeout(vpn->mgmt, 5);
 	osmo_stream_cli_set_read_cb(vpn->mgmt, read_cb);
 	osmo_stream_cli_set_connect_cb(vpn->mgmt, connect_cb);
 	osmo_stream_cli_set_disconnect_cb(vpn->mgmt, disconnect_cb);
