@@ -117,7 +117,7 @@ static int disconnect_cb(struct osmo_stream_cli *conn)
 {
 	struct openvpn_client *vpn = osmo_stream_cli_get_data(conn);
 
-	update_name(vpn->rem_cfg, "management interface unavailable");
+	update_name(vpn->rem_cfg, "disconnected from openvpn management socket");
 	vpn->connected = false;
 	talloc_free(vpn->tun_ip);
 	talloc_free(vpn->rem_cfg->remote_host);
@@ -131,7 +131,7 @@ static int connect_cb(struct osmo_stream_cli *conn)
 {
 	struct openvpn_client *vpn = osmo_stream_cli_get_data(conn);
 
-	update_name(vpn->rem_cfg, "management interface incompatible");
+	update_name(vpn->rem_cfg, "connected to openvpn management socket");
 	vpn->connected = true;
 
 	return 0;
@@ -149,7 +149,7 @@ static int read_cb(struct osmo_stream_cli *conn)
 
 	bytes = osmo_stream_cli_recv(conn, msg);
 	if (bytes < 0)
-		OVPN_LOG(msg, vpn, "unable to receive message in callback\n");
+		OVPN_LOG(msg, vpn, "read on openvpn management socket failed (%d)\n", bytes);
 	else
 		parse_state(msg, vpn);
 
@@ -174,7 +174,7 @@ static bool openvpn_client_create(struct osysmon_state *os, const char *name, co
 	if (!vpn->cfg)
 		goto dealloc;
 
-	vpn->rem_cfg = host_cfg_alloc(vpn, "management interface unavailable", NULL, 0);
+	vpn->rem_cfg = host_cfg_alloc(vpn, "connecting to openvpn management socket", NULL, 0);
 	if (!vpn->rem_cfg)
 		goto dealloc;
 
@@ -191,7 +191,7 @@ static bool openvpn_client_create(struct osysmon_state *os, const char *name, co
 	osmo_stream_cli_set_disconnect_cb(vpn->mgmt, disconnect_cb);
 
 	if (osmo_stream_cli_open(vpn->mgmt) < 0) {
-		OVPN_LOG(vpn->rem_cfg, vpn, "failed to connect to management interface\n");
+		OVPN_LOG(vpn->rem_cfg, vpn, "failed to connect to management socket\n");
 		goto dealloc;
 	}
 
