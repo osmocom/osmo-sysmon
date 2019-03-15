@@ -35,6 +35,7 @@
 #include <osmocom/core/msgb.h>
 #include <osmocom/core/logging.h>
 #include <osmocom/core/application.h>
+#include <osmocom/core/timer.h>
 
 static struct log_info log_info = {};
 
@@ -191,9 +192,31 @@ static void handle_options(int argc, char **argv)
 	}
 }
 
+static struct osmo_timer_list print_timer;
+int ping_init;
+
+static void print_nodes(__attribute__((unused)) void *data)
+{
+	struct value_node *root = value_node_add(NULL, "root", NULL);
+	osysmon_openvpn_poll(root);
+	osysmon_sysinfo_poll(root);
+	osysmon_ctrl_poll(root);
+	osysmon_rtnl_poll(root);
+
+	if (ping_init == 0)
+		osysmon_ping_poll(root);
+
+	osysmon_file_poll(root);
+
+	display_update(root);
+	value_node_del(root);
+
+	osmo_timer_schedule(&print_timer, 1, 0);
+}
+
 int main(int argc, char **argv)
 {
-	int rc, ping_init;
+	int rc;
 
 	osmo_init_logging2(NULL, &log_info);
 
@@ -231,26 +254,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	while (1) {
-		struct value_node *root = value_node_add(NULL, "root", NULL);
-		int vpns = osysmon_openvpn_poll(root);
-		osysmon_sysinfo_poll(root);
-		osysmon_ctrl_poll(root);
-		osysmon_rtnl_poll(root);
+	osmo_timer_setup(&print_timer, print_nodes, NULL);
+	osmo_timer_schedule(&print_timer, 0, 0);
 
-		if (ping_init == 0)
-			osysmon_ping_poll(root);
-
-		osysmon_file_poll(root);
-
-		display_update(root);
-		value_node_del(root);
-
-		if (vpns)
+	while (1)
 			osmo_select_main(0);
-
-		sleep(1);
-	}
 
 	exit(0);
 }
