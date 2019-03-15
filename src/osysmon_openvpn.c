@@ -65,9 +65,10 @@ static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 	char *tok;
 	unsigned int i = 0;
 	uint8_t *m = msgb_data(msg);
+	unsigned int truncated_len = OSMO_MIN(sizeof(tmp) - 1, msgb_length(msg));
 
-	if (msgb_length(msg) > 128)
-		OVPN_LOG(msg, vpn, "received message too long (%d > %u), truncating...\n", msgb_length(msg), 128);
+	if (msgb_length(msg) > truncated_len)
+		OVPN_LOG(msg, vpn, "received message too long (%d >= %u), truncating...\n", msgb_length(msg), truncated_len);
 
 	if (msgb_length(msg) > 0) {
 		if (!isdigit(m[0])) /* skip OpenVPN greetings and alike */
@@ -77,7 +78,8 @@ static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 		return NULL;
 	}
 
-	OSMO_STRLCPY_ARRAY(tmp, (char *)m);
+	memcpy(tmp, m, truncated_len);
+	tmp[truncated_len] = '\0';
 
 	for (tok = strtok(tmp, ","); tok && i < MAX_RESP_COMPONENTS; tok = strtok(NULL, ",")) {
 		/* The string format is documented in https://openvpn.net/community-resources/management-interface/ */
