@@ -59,11 +59,19 @@ struct openvpn_client {
 	bool connected;
 };
 
+/*
+ * The string format is documented in https://openvpn.net/community-resources/management-interface/
+ * Conversation loop looks like this (non-null terminated strings):
+ * CLI -> SRV: "state"
+ * SRV -> CLI: "1552674378,CONNECTED,SUCCESS,10.8.0.11,144.76.43.77,1194,," {0x0d, 0xa} "END" {0x0d, 0xa}
+ * More or less comma-separated fields are returned depending on OpenVPN version.
+ * v2.1.3: Sends only up to field 4 incl, eg: "1552674378,CONNECTED,SUCCESS,10.8.0.11,144.76.43.77" {0x0d, 0xa} "END" {0x0d, 0xa}
+ */
 static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 {
 	char tmp[128], buf[128];
 	char *tok;
-	unsigned int i = 0;
+	unsigned int i;
 	uint8_t *m = msgb_data(msg);
 	unsigned int truncated_len = OSMO_MIN(sizeof(tmp) - 1, msgb_length(msg));
 
@@ -81,8 +89,15 @@ static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 	memcpy(tmp, m, truncated_len);
 	tmp[truncated_len] = '\0';
 
-	for (tok = strtok(tmp, ","); tok && i < MAX_RESP_COMPONENTS; tok = strtok(NULL, ",")) {
-		/* The string format is documented in https://openvpn.net/community-resources/management-interface/ */
+	/* Only interested in first line; Remove return carriage, line feed + new line string "END" */
+	for (i = 0; i < truncated_len; i++) {
+		if (!isprint(tmp[i])) {
+			tmp[i] = '\0';
+			break;
+		}
+	}
+
+	for (tok = strtok(tmp, ","), i = 0; tok && i < MAX_RESP_COMPONENTS; tok = strtok(NULL, ",")) {
 		if (tok) { /* Parse csv string and pick interesting tokens while ignoring the rest. */
 			switch (i++) {
 			/* case 0: unix/date time, not needed */
