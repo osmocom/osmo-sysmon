@@ -107,6 +107,7 @@ static char *parse_state(struct msgb *msg, struct openvpn_client *vpn)
 		case 2:
 			snprintf(buf, sizeof(buf), "%s (%s)", vpn->rem_cfg->name, tok);
 			update_name(vpn->rem_cfg, buf);
+			break;
 		case 3:
 			osmo_talloc_replace_string(vpn->rem_cfg, &vpn->tun_ip, tok);
 			break;
