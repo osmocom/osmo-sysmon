@@ -13,6 +13,8 @@ struct ping_state;
 
 struct osysmon_state {
 	struct rtnl_client_state *rcs;
+	/* list of 'struct osysmon_cmd' */
+	struct llist_head shellcmds;
 	/* list of 'struct ctrl client' */
 	struct llist_head ctrl_clients;
 	/* list of 'struct openvpn_client' */
@@ -21,6 +23,7 @@ struct osysmon_state {
 	struct llist_head netdevs;
 	/* list of 'struct osysmon_file' */
 	struct llist_head files;
+	/* list of ping contexts */
 	struct ping_state *pings;
 };
 
@@ -35,7 +38,6 @@ enum osysmon_vty_node {
 	OPENVPN_NODE,
 	PING_NODE,
 };
-
 
 int osysmon_ctrl_go_parent(struct vty *vty);
 int osysmon_ctrl_init();
@@ -56,3 +58,6 @@ int osysmon_openvpn_poll(struct value_node *parent);
 
 int osysmon_file_init();
 int osysmon_file_poll(struct value_node *parent);
+
+int osysmon_shellcmd_init();
+int osysmon_shellcmd_poll(struct value_node *parent);

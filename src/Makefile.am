@@ -42,6 +42,7 @@ osmo_sysmon_SOURCES = \
 	osysmon_file.c \
 	osysmon_ping.c \
 	osysmon_openvpn.c \
+	osysmon_shellcmd.c \
 	osysmon_main.c \
 	$(NULL)
 

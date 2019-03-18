@@ -207,6 +207,7 @@ static void print_nodes(__attribute__((unused)) void *data)
 		osysmon_ping_poll(root);
 
 	osysmon_file_poll(root);
+	osysmon_shellcmd_poll(root);
 
 	display_update(root);
 	value_node_del(root);
@@ -221,6 +222,7 @@ int main(int argc, char **argv)
 	osmo_init_logging2(NULL, &log_info);
 
 	g_oss = talloc_zero(NULL, struct osysmon_state);
+	INIT_LLIST_HEAD(&g_oss->shellcmds);
 	INIT_LLIST_HEAD(&g_oss->ctrl_clients);
 	INIT_LLIST_HEAD(&g_oss->openvpn_clients);
 	INIT_LLIST_HEAD(&g_oss->netdevs);
@@ -229,6 +231,7 @@ int main(int argc, char **argv)
 	vty_init(&vty_info);
 	handle_options(argc, argv);
 	osysmon_sysinfo_init();
+	osysmon_shellcmd_init();
 	osysmon_ctrl_init();
 	osysmon_openvpn_init();
 	osysmon_rtnl_init();
