@@ -1,0 +1,47 @@
+Source: osmo-sysmon
+Section: net
+Priority: extra
+Maintainer: Pau Espin Pedrol <pespin@sysmocom.de>
+Build-Depends: debhelper (>=9),
+               dh-autoreconf,
+               autotools-dev,
+               autoconf,
+               automake,
+               libtool,
+               pkg-config,
+               libtalloc-dev,
+               liboping-dev (>= 1.9.0),
+               libosmocore-dev (>= 1.0.1),
+               libosmo-netif-dev (>= 0.4.0),
+Standards-Version: 3.9.8
+Vcs-Git: git://git.osmocom.org/osmo-sysmon.git
+Vcs-Browser: https://git.osmocom.org/osmo-sysmon/
+Homepage: https://osmocom.org/
+
+Package: osmo-sysmon
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Simple Osmocom System Monitor (osysmon)
+  This application prints on screen once per second relevant information about
+  the status of the system. Information being printed can be specified through
+  configuration file (and VTY).
+  .
+  Useful to run as a login shell to provide users with some diagnose system
+  without providing full access the system.
+
+Package: osmo-sysmon-dbg
+Section: debug
+Architecture: any
+Multi-Arch: same
+Depends: osmo-sysmon (= ${binary:Version}), ${misc:Depends}
+Description: Simple Osmocom System Monitor (osysmon)
+  This application prints on screen once per second relevant information about
+  the status of the system. Information being printed can be specified through
+  configuration file (and VTY).
+  .
+  Useful to run as a login shell to provide users with some diagnose system
+  without providing full access the system.
+  .
+  This package contains the debug symbols for osmo-sysmon in order to
+  generate meaningful backtraces in bug-reports.
