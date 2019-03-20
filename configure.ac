@@ -45,7 +45,8 @@ PKG_CHECK_MODULES(LIBOSMOGSM, libosmogsm >= 0.11.0)
 PKG_CHECK_MODULES(LIBOSMONETIF, libosmo-netif >= 0.4.0)
 PKG_CHECK_MODULES(LIBMNL, libmnl)
 dnl FIXME: bump to 1.10.0 once it's available on build slaves and remove workaround from osysmon_ping.c
-PKG_CHECK_MODULES(LIBOPING, liboping >= 1.9.0)
+dnl FIXME: debian8 provides 1.7.0, debian9 provides 1.9.0
+PKG_CHECK_MODULES(LIBOPING, liboping >= 1.7.0)
 
 dnl checks for header files
 AC_HEADER_STDC

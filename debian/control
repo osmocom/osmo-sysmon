@@ -11,7 +11,7 @@ Build-Depends: debhelper (>=9),
                pkg-config,
                libtalloc-dev,
                libmnl-dev,
-               liboping-dev (>= 1.9.0),
+               liboping-dev (>= 1.7.0),
                libosmocore-dev (>= 1.0.1),
                libosmo-netif-dev (>= 0.4.0),
 Standards-Version: 3.9.8
