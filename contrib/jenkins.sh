@@ -46,4 +46,5 @@ LD_LIBRARY_PATH="$inst/lib" \
   $MAKE distcheck \
   || cat-testlogs.sh
 
+$MAKE maintainer-clean
 osmo-clean-workspace.sh
