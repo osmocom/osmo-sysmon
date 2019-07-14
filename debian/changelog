@@ -1,3 +1,88 @@
+osmo-sysmon (0.2.0) unstable; urgency=medium
+
+  [ Harald Welte ]
+  * Initial empty repository
+  * initial checkin
+  * simple_ctrl: Add timeout to blocking I/O
+  * simple_ctrl.c: Support an indefinite timeout (using tout_msec=0)
+  * simple_ctrl.c: API for setting timeout + raw CTRL msgb read
+  * osmo-ctrl-client: Implement "monitor" mode
+  * simple-ctrl-client: Add basic help/usage information
+  * simple_ctrl: Abstract out timeval_from_msec() function
+  * simple_ctrl: Non-blocking connect() with timeout
+  * initial implementation of 'osysmon' main program + CTRL client
+  * add osysmon_sysinfo for uptime/ram/load
+  * osysmon_ctrl: Use variable name, not ctrl-client name as val->name
+  * osysmon_main: Show hierarchical/tree structure during printing
+  * value_node: add combined find_or_add() and avoid duplicate names
+  * value_node: Add 'idx' member to handle lookup by ifindex.
+  * Add network link + address monitiring via osysmon_rtnl.c
+  * add osysmon_file.c for reading/monitoring files (like sysfs)
+  * migrate to autoconf
+  * add .gitignore file
+  * rename to osmo-sysmon
+  * simple_ctrl: Check for NULL return of simple_ctrl_xceive
+  * add contrib/jenkins.sh for build verification
+
+  [ Daniel Willmann ]
+  * Remove unused function
+  * Fix compilation issue on my machine, remove unused include
+  * Remove unused last_value handling code
+  * Add zero termination char to received ctrl cmd message
+  * Disconnect properly on errors so we can reconnect
+  * git-version-gen: Don't check for .git directory
+
+  [ Martin Hauke ]
+  * Makefile.am: Fix typo
+
+  [ Max ]
+  * Add git-review config
+  * Update gitignore
+  * Report config file name on error
+  * Update default config
+  * Expand default config
+  * Add OpenVPN status helper example from corresponding ticket
+  * Move shared libs into common LDADD
+  * Drop unused parameter
+  * ctrl: separate config structure
+  * Update Makefile.am
+  * Add ping probe support
+  * jenkins.sh: remove obsolete comments
+  * Install signal handlers before processing config
+  * ctrl: log host/port on errors
+  * Introduce generic host config and related helpers
+  * Add OpenVPN probe
+  * OpenVPN: track interface disconnect
+  * Update config example
+
+  [ Stefan Sperling ]
+  * fix file descriptor leak in osysmon_file_read
+
+  [ Pau Espin Pedrol ]
+  * Add m4 missing files to fix build
+  * Move source code to src subdir
+  * Add cmdline option parsing support
+  * Integrate sleeping/printing loop into osmo main loop
+  * openvpn: Improve logging and status information
+  * openvpn: Set reconnect timeout to a much lower value
+  * openvpn: String returned from openvpn is not null-terminated
+  * openvpn: log status description
+  * openvpn: Fix garbage printed after remote port
+  * openvpn: Remove useless conditional block in parse_state
+  * openvn: Fix missing break in last commit
+  * Add vty option to print output of shell cmd on every poll step
+  * Makefile.am: Add missing bits to have make release working
+  * Add debian packaging content
+  * Bump version: 0.0.1.66-d4c3-dirty → 0.1.0
+  * debian: Add missing libmnl-dev dependency
+  * Depend on liboping 1.7.0 instead of 1.9.0
+
+  [ Oliver Smith ]
+  * osmo-sysmon -h: s/OsmoHLR/osmo-sysmon/
+  * contrib/jenkins.sh: run "make maintainer-clean"
+
+ -- Harald Welte <laforge@gnumonks.org>  Sun, 14 Jul 2019 08:04:51 +0800
+
 osmo-sysmon (0.1.0) unstable; urgency=medium
 
   [ Harald Welte ]
