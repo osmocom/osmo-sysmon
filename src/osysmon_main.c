@@ -118,6 +118,7 @@ static void print_usage()
 static void print_help()
 {
 	printf("  -h --help                  This text.\n");
+	printf("  -o --oneshot               Oneshot mode. Execute queries once, then exit.\n");
 	printf("  -c --config-file filename  The config file to use.\n");
 	printf("  -d option --debug=DRLL:DCC:DMM:DRR:DRSL:DNM  Enable debugging.\n");
 	printf("  -D --daemonize             Fork the process into a background daemon.\n");
@@ -130,9 +131,11 @@ static void print_help()
 static struct {
 	const char *config_file;
 	bool daemonize;
+	bool oneshot;
 } cmdline_opts = {
 	.config_file = "osmo-sysmon.cfg",
 	.daemonize = false,
+	.oneshot = false,
 };
 
 static void handle_options(int argc, char **argv)
@@ -141,6 +144,7 @@ static void handle_options(int argc, char **argv)
 		int option_index = 0, c;
 		static struct option long_options[] = {
 			{"help", 0, 0, 'h'},
+			{"oneshot", 0, 0, 'o'},
 			{"config-file", 1, 0, 'c'},
 			{"debug", 1, 0, 'd'},
 			{"daemonize", 0, 0, 'D'},
@@ -151,7 +155,7 @@ static void handle_options(int argc, char **argv)
 			{0, 0, 0, 0}
 		};
 
-		c = getopt_long(argc, argv, "hc:d:Dse:TV",
+		c = getopt_long(argc, argv, "hoc:d:Dse:TV",
 				long_options, &option_index);
 		if (c == -1)
 			break;
@@ -161,6 +165,9 @@ static void handle_options(int argc, char **argv)
 			print_usage();
 			print_help();
 			exit(0);
+		case 'o':
+			cmdline_opts.oneshot = true;
+			break;
 		case 'c':
 			cmdline_opts.config_file = optarg;
 			break;
@@ -211,6 +218,9 @@ static void print_nodes(__attribute__((unused)) void *data)
 
 	display_update(root);
 	value_node_del(root);
+
+	if (cmdline_opts.oneshot)
+		exit(0);
 
 	osmo_timer_schedule(&print_timer, 1, 0);
 }
