@@ -229,6 +229,10 @@ int osysmon_ping_poll(struct value_node *parent)
 	struct value_node *vn_host;
 	int num_host = iterator_count(g_oss->pings->ping_handle);
 	pingobj_iter_t *iter;
+
+	if (!num_host)
+		return 0;
+
 	struct value_node *vn_ping = value_node_add(parent, "ping", NULL);
 	if (!vn_ping)
 		return -ENOMEM;
@@ -257,8 +261,5 @@ int osysmon_ping_poll(struct value_node *parent)
 		add_ttl(iter, vn_host);
 	}
 
-	if (num_host)
-		return ping_send(g_oss->pings->ping_handle);
-
-	return 0;
+	return ping_send(g_oss->pings->ping_handle);
 }
