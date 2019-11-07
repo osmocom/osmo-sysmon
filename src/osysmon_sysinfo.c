@@ -30,16 +30,6 @@
 #include "osysmon.h"
 #include "value_node.h"
 
-/***********************************************************************
- * Runtime Code
- ***********************************************************************/
-
-/* called once on startup before config file parsing */
-int osysmon_sysinfo_init()
-{
-	return 0;
-}
-
 static float loadfac(unsigned long in) {
 	return in/65536.0;
 }
@@ -55,6 +45,48 @@ static float loadfac(unsigned long in) {
 #define to_minutes(in)	(((in)/(SECS_PER_MIN))%MINS_PER_HOUR)
 #define to_seconds(in)	((in)%SECS_PER_MIN)
 
+static bool sysinfo_enabled = 1;
+
+/***********************************************************************
+ * VTY
+ ***********************************************************************/
+
+#define CMD_STR "Display sysinfo\n"
+DEFUN(cfg_sysinfo, cfg_sysinfo_cmd,
+	"sysinfo",
+	CMD_STR)
+{
+	sysinfo_enabled = true;
+
+	return CMD_SUCCESS;
+}
+
+DEFUN(cfg_no_sysinfo, cfg_no_sysinfo_cmd,
+	"no sysinfo",
+	NO_STR CMD_STR)
+{
+	sysinfo_enabled = false;
+
+	return CMD_SUCCESS;
+}
+
+static void osysmon_sysinfo_vty_init(void)
+{
+	install_element(CONFIG_NODE, &cfg_sysinfo_cmd);
+	install_element(CONFIG_NODE, &cfg_no_sysinfo_cmd);
+}
+
+/***********************************************************************
+ * Runtime Code
+ ***********************************************************************/
+
+/* called once on startup before config file parsing */
+int osysmon_sysinfo_init()
+{
+	osysmon_sysinfo_vty_init();
+	return 0;
+}
+
 /* called periodically */
 int osysmon_sysinfo_poll(struct value_node *parent)
 {
@@ -62,6 +94,9 @@ int osysmon_sysinfo_poll(struct value_node *parent)
 	struct value_node *vn_sysinfo;
 	char buf[32];
 	int rc;
+
+	if (!sysinfo_enabled)
+		return 0;
 
 	vn_sysinfo = value_node_add(parent, "sysinfo", NULL);
 

@@ -401,6 +401,9 @@ int osysmon_rtnl_poll(struct value_node *parent)
 {
 	struct value_node *vn_net;
 
+	if (llist_empty(&g_oss->netdevs))
+		return 0;
+
 	if (!g_oss->rcs)
 		g_oss->rcs = rtnl_init(NULL);
 

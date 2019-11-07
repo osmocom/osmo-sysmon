@@ -153,6 +153,9 @@ int osysmon_file_poll(struct value_node *parent)
 	struct value_node *vn_file;
 	struct osysmon_file *of;
 
+	if (llist_empty(&g_oss->files))
+		return 0;
+
 	vn_file = value_node_add(parent, "file", NULL);
 
 	llist_for_each_entry(of, &g_oss->files, list)

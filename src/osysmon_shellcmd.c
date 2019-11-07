@@ -165,6 +165,9 @@ int osysmon_shellcmd_poll(struct value_node *parent)
 	struct value_node *vn_file;
 	struct osysmon_shellcmd *oc;
 
+	if (llist_empty(&g_oss->shellcmds))
+		return 0;
+
 	vn_file = value_node_add(parent, "shellcmd", NULL);
 
 	llist_for_each_entry(oc, &g_oss->shellcmds, list)
