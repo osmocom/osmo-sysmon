@@ -197,6 +197,11 @@ static void handle_options(int argc, char **argv)
 			break;
 		}
 	}
+
+	if (argc > optind) {
+		fprintf(stderr, "Unsupported positional arguments on command line\n");
+		exit(2);
+	}
 }
 
 static struct osmo_timer_list print_timer;
