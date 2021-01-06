@@ -1,3 +1,16 @@
+osmo-sysmon (0.3.0) unstable; urgency=medium
+
+  [ Daniel Willmann ]
+  * simple_ctrl: Don't cause an error if GET response is empty
+  * Cleaner output if sections are empty
+  * Add oneshot mode that exits after one iteration
+
+  [ Harald Welte ]
+  * exit(2) on unsupported positional arguments on command line
+  * configure.ac: Make configure.ac and debian/control agree on versions
+
+ -- Harald Welte <laforge@osmocom.org>  Wed, 06 Jan 2021 16:56:14 +0100
+
 osmo-sysmon (0.2.0) unstable; urgency=medium
 
   [ Harald Welte ]
