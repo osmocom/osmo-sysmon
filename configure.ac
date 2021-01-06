@@ -38,10 +38,10 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [LIBRARY_DL="$LIBS";LIBS=""])
 AC_SUBST(LIBRARY_DL)
 
 
-PKG_CHECK_MODULES(LIBOSMOCORE, libosmocore >= 0.11.0)
-PKG_CHECK_MODULES(LIBOSMOVTY, libosmovty >= 0.11.0)
-PKG_CHECK_MODULES(LIBOSMOCTRL, libosmoctrl >= 0.11.0)
-PKG_CHECK_MODULES(LIBOSMOGSM, libosmogsm >= 0.11.0)
+PKG_CHECK_MODULES(LIBOSMOCORE, libosmocore >= 1.0.1)
+PKG_CHECK_MODULES(LIBOSMOVTY, libosmovty >= 1.0.1)
+PKG_CHECK_MODULES(LIBOSMOCTRL, libosmoctrl >= 1.0.1)
+PKG_CHECK_MODULES(LIBOSMOGSM, libosmogsm >= 1.0.1)
 PKG_CHECK_MODULES(LIBOSMONETIF, libosmo-netif >= 0.4.0)
 PKG_CHECK_MODULES(LIBMNL, libmnl)
 dnl FIXME: bump to 1.10.0 once it's available on build slaves and remove workaround from osysmon_ping.c
