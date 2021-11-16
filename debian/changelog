@@ -1,3 +1,14 @@
+osmo-sysmon (0.3.1) unstable; urgency=medium
+
+  [ Oliver Smith ]
+  * configure.ac: set -std=gnu11
+  * configure: don't turn some warnings into errors
+
+  [ Harald Welte ]
+  * add README.md on what this repository is about
+
+ -- Pau Espin Pedrol <pespin@sysmocom.de>  Tue, 16 Nov 2021 14:46:05 +0100
+
 osmo-sysmon (0.3.0) unstable; urgency=medium
 
   [ Daniel Willmann ]
