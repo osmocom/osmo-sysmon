@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: osmo-sysmon
-Source: git://git.osmocom.org/osmo-sysmon
+Source: https://gitea.osmocom.org/osmocom/osmo-sysmon
 
 Files:     *
 Copyright: 2019 sysmocom s.f.m.c. GmbH <info@sysmocom.de>

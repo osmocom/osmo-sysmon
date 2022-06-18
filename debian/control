@@ -15,8 +15,8 @@ Build-Depends: debhelper (>=9),
                libosmocore-dev (>= 1.0.1),
                libosmo-netif-dev (>= 0.4.0),
 Standards-Version: 3.9.8
-Vcs-Git: git://git.osmocom.org/osmo-sysmon.git
-Vcs-Browser: https://git.osmocom.org/osmo-sysmon/
+Vcs-Git: https://gitea.osmocom.org/osmocom/osmo-sysmon
+Vcs-Browser: https://gitea.osmocom.org/osmocom/osmo-sysmon
 Homepage: https://osmocom.org/
 
 Package: osmo-sysmon

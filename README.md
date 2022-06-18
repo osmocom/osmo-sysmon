@@ -18,10 +18,9 @@ GIT Repository
 
 You can clone from the official osmo-sysmon.git repository using
 
-	git clone git://git.osmocom.org/osmo-sysmon.git
-	git clone https://git.osmocom.org/osmo-sysmon.git
+	git clone https://gitea.osmocom.org/osmocom/osmo-sysmon
 
-There is a cgit interface at https://git.osmocom.org/osmo-sysmon/
+There is a web interface at <https://gitea.osmocom.org/osmocom/osmo-sysmon>
 
 Documentation
 -------------
