@@ -1,3 +1,16 @@
+osmo-sysmon (0.3.2) unstable; urgency=medium
+
+  [ Oliver Smith ]
+  * treewide: remove FSF address
+
+  [ Pau Espin Pedrol ]
+  * Drop unneeded ax_check_compile_flag.m4
+
+  [ Harald Welte ]
+  * update git URLs (git -> https; gitea)
+
+ -- Pau Espin Pedrol <pespin@sysmocom.de>  Tue, 28 Jun 2022 18:27:29 +0200
+
 osmo-sysmon (0.3.1) unstable; urgency=medium
 
   [ Oliver Smith ]
