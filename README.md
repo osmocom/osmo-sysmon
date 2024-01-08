@@ -1,4 +1,4 @@
-omso-sysmon - Osmocom system monitor
+osmo-sysmon - Osmocom system monitor
 ====================================
 
 This repository contains code that aggregates various pieces of
